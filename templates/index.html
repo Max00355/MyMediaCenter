@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>Media Center</title>
+        <link rel="stylesheet" type="text/css" href="../static/style.css"/>
+        <script src="http://www.youtube.com/player_api"></script>
+    </head>
+    <div class="currentSong" id="player"></div>
+
+    <div class="songs">
+        {% for song in songs %}
+        <button name="song" onClick="changeSong('{{ song["videoid"] }}')">{{ song['name'] }}</button>
+        <hr/>
+        {% endfor %}
+    </div>
+
+    <div class="add">
+        <form method="POST">
+            <input type="text" name="name" placeholder="Song Title"/><br/>
+            <input type="text" name="artist" placeholder="Song Artist"/><br/>
+            <input type="text" name="url" placeholder="Youtube URL"/><br/>
+            <input type="submit" value="Submit"/>
+        </form>
+    </div>
+        <script>
+       var player;
+var index = 0;
+var songs = {{ jsSongs | safe}}['data'];
+function onYouTubePlayerAPIReady() {
+     
+    //for(var x = 0; x < songs.length; x++) {
+        generatePlayer()
+    
+
+    }
+
+    // autoplay video
+function onPlayerReady(event) {
+        event.target.playVideo();
+    }
+
+    // when video ends
+function onPlayerStateChange(event) {        
+        if(event.data === 0) {            
+            index += 1;
+            generatePlayer();
+            onYoutubePlayerAPIReady()
+            
+}
+    } 
+        
+
+function generatePlayer() {
+
+        return player = new YT.Player('player', {
+          height: '0',
+          width: '0',
+          videoId: songs[index]['videoid'],
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        }); 
+
+}        
+
+        </script>
+    
+    </html>
