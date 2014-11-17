@@ -3,12 +3,13 @@
         <title>Media Center</title>
         <link rel="stylesheet" type="text/css" href="../static/style.css"/>
         <script src="http://www.youtube.com/player_api"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     </head>
     <div class="currentSong" id="player"></div>
-
+    <br/>
     <div class="songs">
         {% for song in songs %}
-        <button name="song" onClick="changeSong('{{ song["videoid"] }}')">{{ song['name'] }}</button>
+        <a href="/{{ loop.index - 1}}">{{ song['name'] }} - {{ song['artist'] }}</a>
         <hr/>
         {% endfor %}
     </div>
@@ -24,12 +25,15 @@
         <script>
        var player;
 var index = 0;
+var numberOn = {{ number | safe}}['number'];
 var songs = {{ jsSongs | safe}}['data'];
 function onYouTubePlayerAPIReady() {
      
-    //for(var x = 0; x < songs.length; x++) {
+    if (numberOn) {
+        
         generatePlayer()
     
+    }
 
     }
 
@@ -41,10 +45,11 @@ function onPlayerReady(event) {
     // when video ends
 function onPlayerStateChange(event) {        
         if(event.data === 0) {            
-            index += 1;
-            generatePlayer();
-            onYoutubePlayerAPIReady()
-            
+            numberOn = parseInt(numberOn) + 1;
+            if (numberOn === songs.length) {
+                numberOn = 0;
+            }
+            window.location = "/"+numberOn;
 }
     } 
         
@@ -52,9 +57,9 @@ function onPlayerStateChange(event) {
 function generatePlayer() {
 
         return player = new YT.Player('player', {
-          height: '0',
-          width: '0',
-          videoId: songs[index]['videoid'],
+          height: '600',
+          width: '800',
+          videoId: songs[numberOn]['videoid'],
           events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange

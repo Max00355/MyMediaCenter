@@ -5,8 +5,9 @@ import json
 app = Flask(__name__)
 db = Connect("mediacenter.db", autosave = True)
 
-@app.route("/", methods=["POST", "GET"])
-def index():
+@app.route("/<number>", methods=["POST", "GET"])
+@app.route("/", methods=['GET', "POST"])
+def index(number = None):
     if request.method == "POST":
         url = request.form['url']
         name = request.form['name']
@@ -18,8 +19,12 @@ def index():
     songs = db.find("youtube", "all")
     if not songs:
         songs = []
-    return render_template("index.html", songs=songs, jsSongs =json.dumps({"data":songs}))
+    return render_template("index.html", songs=songs, jsSongs =json.dumps({"data":songs}), number = json.dumps({"number":number}))
 
+
+@app.route("/add/<name>/<artist>/<link>")
+def add(name, artist, link):
+    pass
 
 
 app.run(debug=True)
